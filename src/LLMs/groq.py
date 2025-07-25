@@ -1,4 +1,6 @@
 from langchain_groq import Groq
+from dotenv import load_dotenv
+load_dotenv()
 import os
 
 class GroqLLM:
