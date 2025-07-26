@@ -1,4 +1,4 @@
-from src.state import State
+from src.state.state import State
 
 class dataValidator:
     def __init__(self,model):

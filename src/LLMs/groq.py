@@ -1,4 +1,4 @@
-from langchain_groq import Groq
+from langchain_groq import ChatGroq
 from dotenv import load_dotenv
 load_dotenv()
 import os
@@ -12,4 +12,4 @@ class GroqLLM:
         if not api_key:
             raise ValueError("GROQ_API_KEY is not set in the environment or passed as an argument.")
 
-        return Groq(api_key=api_key, model=model_name)
+        return ChatGroq(api_key=api_key, model=model_name)
