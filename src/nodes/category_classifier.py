@@ -1,39 +1,76 @@
+import json, os
 from src.state.state import State
 
 class categoryClassifier:
     def __init__(self, model):
         self.llm = model
+        config_path = "/Users/surya/Developer/AI-Negotiator/src/config/config.json"
+        with open(config_path, 'r') as f:
+            self.config = json.load(f)
 
     def process(self, state: State) -> dict:
-        """Classify the parsed data into standard business categories"""
-        
+        """
+        Use LLM to classify data and identify areas with increases
+        """
         if not state["messages"]:
-            return {"messages": ["No data received from parser for classification"]}
+            return {"messages": ["No data to classify"],
+                    "areas_with_increases": []}
+
+        text = state["messages"][-1]
         
-        # Get the parsed data
-        parsed_data = state["messages"][-1]
+        # Convert config to string for prompt
+        config_string = json.dumps(self.config, indent=2)
         
-        # Simple classification prompt
         classification_prompt = f"""
-        Based on the following parsed data, classify the information into these standard business categories:
-
-        1. FINANCIAL (revenue, costs, profits, budgets)
-        2. OPERATIONAL (efficiency, productivity, quality)
-        3. CUSTOMER (satisfaction, acquisition, retention)
-        4. MARKET (share, growth, competition)
-        5. HUMAN RESOURCES (headcount, salaries, training)
-        6. TECHNOLOGY (systems, automation, digital)
-
-        Parsed Data:
-        {parsed_data}
-
-        Please classify each data point and identify which categories show increases. 
-        Format your response clearly with category headers and bullet points.
+        You are given the following configuration with business categories and increment indicators:
+        
+        {config_string}
+        
+        Analyze the following parsed data and classify it:
+        
+        {text}
+        
+        Instructions:
+        - Look for data points that match the category keywords
+        - Check if those data points show any increment indicators
+        - Return only categories that have BOTH matching keywords AND increment indicators
+        
+        Return response as JSON:
+        {{
+            "areas_with_increases": ["CATEGORY1", "CATEGORY2"],
+            "details": "Brief explanation"
+        }}
         """
         
-        try:
-            classification_result = self.llm.invoke(classification_prompt)
-            return {"messages": state["messages"] + [f"CLASSIFICATION:\n{classification_result}"]}
+        print(f"-----Classification Prompt------: {classification_prompt}")  # Debugging output
         
+        try:
+            response = self.llm.invoke(classification_prompt)
+            print(f"-----LLM Response-----: {response}")  # Debugging output
+            
+            try:
+                parsed_response = json.loads(response)
+                areas_with_increases = parsed_response.get("areas_with_increases", [])
+                details = parsed_response.get("details", "")
+                
+                print(f"-----Classification Details-----:", {
+                    "messages": state["messages"] + [f"Areas with increments: {areas_with_increases}\nDetails: {details}"],
+                    "areas_with_increases": areas_with_increases
+                })
+                
+                return {
+                    "messages": state["messages"] + [f"Areas with increments: {areas_with_increases}\nDetails: {details}"],
+                    "areas_with_increases": areas_with_increases
+                }
+                
+            except json.JSONDecodeError:
+                return {
+                    "messages": state["messages"] + [f"Classification: {response}"],
+                    "areas_with_increases": []
+                }
+                
         except Exception as e:
-            return {"messages": state["messages"] + [f"Classification error: {str(e)}"]}
+            return {
+                "messages": state["messages"] + [f"Classification error: {str(e)}"],
+                "areas_with_increases": []
+            }

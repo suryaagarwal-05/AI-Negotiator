@@ -1,0 +1,11 @@
+{
+  "categories": {
+    "FINANCIAL": ["revenue", "cost", "profit", "budget"],
+    "OPERATIONAL": ["efficiency", "productivity", "quality"],
+    "CUSTOMER": ["satisfaction", "acquisition", "retention"],
+    "MARKET": ["share", "growth", "competition"],
+    "HUMAN_RESOURCES": ["headcount", "salary", "training"],
+    "TECHNOLOGY": ["system", "automation", "digital"]
+  },
+  "increment_indicators": ["increase", "growth", "up", "rise"]
+}
