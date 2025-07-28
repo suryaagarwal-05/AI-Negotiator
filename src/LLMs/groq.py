@@ -17,17 +17,8 @@ class GroqLLM:
         """Initialize MCP client once for the class"""
         if cls._mcp_client is None:
             cls._mcp_client = MultiServerMCPClient({
-                "search": {
-                    "command": "python",
-                    "args": ["search_server.py"],  # Your search MCP server
-                    "transport": "stdio",
-                },
-                "news": {
-                    "url": "http://localhost:8001/mcp",  # News search server
-                    "transport": "streamable_http",
-                },
-                "market": {
-                    "url": "http://localhost:8002/mcp",  # Market/competitor price server
+                "tavily": {
+                    "url": "https://server.smithery.ai/@tavily-ai/tavily-mcp/mcp?api_key=2d235323-4264-4c9d-9c8a-f317dbad8514&profile=invisible-platypus-MViQZ2&max_results=1",
                     "transport": "streamable_http",
                 }
             })
@@ -45,7 +36,7 @@ class GroqLLM:
         return ChatGroq(api_key=api_key, model=model_name)
     
     @classmethod
-    async def get_llm_with_tools(cls, model_name="llama-3.3-70b-versatile", api_key=None):
+    async def get_llm_with_tools(cls, model_name="deepseek-r1-distill-llama-70b", api_key=None):
         """Get LLM model with tools bound (agent)"""
         # Initialize MCP client and get tools
         await cls._initialize_mcp_client()

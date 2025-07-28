@@ -34,6 +34,7 @@ class categoryClassifier:
         - Look for data points that match the category keywords
         - Check if those data points show any increment indicators
         - Return only categories that have BOTH matching keywords AND increment indicators
+        - Do not mention any useless stuff, keep answer precise and focused.
         
         Return response as JSON:
         {{
@@ -42,32 +43,14 @@ class categoryClassifier:
         }}
         """
         
-        print(f"-----Classification Prompt------: {classification_prompt}")  # Debugging output
+        # print(f"-----Classification Prompt------: {classification_prompt}")  # Debugging output
         
         try:
             response = self.llm.invoke(classification_prompt)
-            print(f"-----LLM Response-----: {response}")  # Debugging output
+            print(f"CATEGORYCLASSIFIER, -----LLM Response-----: {response}")  # Debugging output
             
-            try:
-                parsed_response = json.loads(response)
-                areas_with_increases = parsed_response.get("areas_with_increases", [])
-                details = parsed_response.get("details", "")
-                
-                print(f"-----Classification Details-----:", {
-                    "messages": state["messages"] + [f"Areas with increments: {areas_with_increases}\nDetails: {details}"],
-                    "areas_with_increases": areas_with_increases
-                })
-                
-                return {
-                    "messages": state["messages"] + [f"Areas with increments: {areas_with_increases}\nDetails: {details}"],
-                    "areas_with_increases": areas_with_increases
-                }
-                
-            except json.JSONDecodeError:
-                return {
-                    "messages": state["messages"] + [f"Classification: {response}"],
-                    "areas_with_increases": []
-                }
+            return {"messages": response}
+            
                 
         except Exception as e:
             return {

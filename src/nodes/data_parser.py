@@ -18,6 +18,7 @@ class dataParser:
             2. Classify different sections or categories
             3. Identify areas where values have increased
             4. Provide a summary of your findings
+            5. Keep the response concise and focused on the increases(do not mention useless things.)
             
             Data to analyze:
             {csv_data_message}
@@ -25,6 +26,7 @@ class dataParser:
             
             # Invoke the LLM with the parsing prompt
             response = self.llm.invoke(parsing_prompt)
+            print("111111111111111111111111111111111111111111", response)
             
             # Return the updated state
             return {"messages": [response]}

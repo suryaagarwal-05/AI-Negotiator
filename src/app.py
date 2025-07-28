@@ -1,7 +1,7 @@
 import pandas as pd
-from src.langgraph.graph_builder import GraphBuilder
-
+from src.langgraph.graph_builder import run_negotiator_graph  # Import the wrapper
 from dotenv import load_dotenv
+
 load_dotenv()
 
 def run_negotiator(csv_path):
@@ -14,15 +14,7 @@ def run_negotiator(csv_path):
 
     print(f"Loaded file with columns: {list(df.columns)}")
     
-       # Step 2: Call langgraph function to start the negotiation process
-    graph_builder = GraphBuilder()
-    
-    # Convert DataFrame to string representation for LLM processing
+    # Step 2: Use the synchronous wrapper
     csv_data = df.to_string(index=False)
-    
-    # Pass the actual data instead of a hardcoded message
-    result = graph_builder.negotiator_graph(csv_data)
+    result = run_negotiator_graph(csv_data)  # This handles async internally
     print("Negotiation Result:", result)
-
-    
- 

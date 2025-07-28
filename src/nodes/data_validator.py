@@ -10,36 +10,32 @@ class DataValidator:
         """
         Clean validation process - LLM handles everything with bound tools
         """
-        if not state.get("areas_with_increases") or not state["messages"]:
-            return {
-                "messages": state["messages"] + ["No data to validate"],
-                "validation_results": None
-            }
         
         # Get data from state
-        areas_with_increases = state["areas_with_increases"]
+        areas_with_increases = state["messages"][-1]
+        print(f"DATAVALIDATOR, -----Areas with Increases-----: {areas_with_increases}")  # Debugging output
+        print(f"DATAVALIDATOR, *********END*********")  # Debugging output
         original_data = state["messages"][0] if state["messages"] else ""
         
-        # Simple, comprehensive prompt
-        validation_prompt = f"""
-        Validate these areas showing increases by searching for current information:
-
-        AREAS WITH INCREASES: {areas_with_increases}
-        ORIGINAL CONTEXT: {original_data}
-
-        Please search for and analyze:
-        1. Recent news about these areas to verify the increases
-        2. Competitor pricing and market data for comparison  
-        3. Industry trends and market context
-
-        Provide a comprehensive validation report with your findings and recommendations.
-        """
+        # AREAS WITH INCREASES: {areas_with_increases}
         
+        # Optimized prompt for Tavily MCP tools
+        validation_prompt = f"""
+You have access to Tavily search tools that can search the web, news, and provide real-time information. You must make only **one tool call** to fetch all required information for price increase for tyres in india.
+
+Your task:
+- Conduct a **single search operation** that gathers concise, high-quality insights for each area listed.
+Respond with only the necessary, actionable content. Be direct, structured, and avoid filler.
+"""
+
+
         try:
             # Let the agent handle everything
             response = await self.llm_agent.ainvoke({
                 "messages": [{"role": "user", "content": validation_prompt}]
             })
+            
+            print(f"DATAVALIDATOR, -----Validation Response-----:",response)  # Debugging output
             
             return {
                 "messages": state["messages"] + ["Data validation completed"],

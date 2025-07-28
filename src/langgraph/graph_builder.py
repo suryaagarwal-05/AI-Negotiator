@@ -3,8 +3,8 @@ from langgraph.graph import StateGraph, START, END
 from src.nodes.data_parser import dataParser
 from src.nodes.category_classifier import categoryClassifier
 from src.nodes.data_validator import DataValidator
-# from src.nodes.result_analyser import resultAnalyser
-# from src.nodes.output_generator import outputGenerator
+from src.nodes.result_analyser import resultAnalyser
+from src.nodes.output_generator import outputGenerator
 
 from src.LLMs.groq import GroqLLM
 from src.state.state import State
@@ -29,17 +29,17 @@ class GraphBuilder:
         self.graph_builder.add_node("parser", dataParser(self.llm).process)
         self.graph_builder.add_node("classifier", categoryClassifier(self.llm).process)
         self.graph_builder.add_node("validator", DataValidator(self.llm_with_tools).process)
-        # self.graph_builder.add_node("analyzer", resultAnalyser(self.llm).process)
-        # self.graph_builder.add_node("generator", outputGenerator(self.llm).process)
+        self.graph_builder.add_node("analyzer", resultAnalyser(self.llm).process)
+        self.graph_builder.add_node("generator", outputGenerator(self.llm).process)
         
         # Add edges
         self.graph_builder.add_edge(START, "parser")
         self.graph_builder.add_edge("parser", "classifier") 
         self.graph_builder.add_edge("classifier", "validator")
-        # self.graph_builder.add_edge("validator", "analyzer")
-        # self.graph_builder.add_edge("analyzer", "generator")
-        # self.graph_builder.add_edge("generator", END)
-        self.graph_builder.add_edge("validator", END)
+        self.graph_builder.add_edge("validator", "analyzer")
+        self.graph_builder.add_edge("analyzer", "generator")
+        self.graph_builder.add_edge("generator", END)
+        # self.graph_builder.add_edge("analyzer", END)
         
         compiled_graph = self.graph_builder.compile()
         
@@ -47,7 +47,8 @@ class GraphBuilder:
             "messages": [f"Please parse this CSV data and classify the sections or areas in which the values are increased:\n\n{csv_data}"]
         }
         
-        return compiled_graph.invoke(initial_state)
+        # Use ainvoke for async execution
+        return await compiled_graph.ainvoke(initial_state)
 
 # Usage wrapper to handle async
 def run_negotiator_graph(csv_data):
