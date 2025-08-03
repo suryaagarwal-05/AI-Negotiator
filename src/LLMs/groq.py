@@ -1,4 +1,3 @@
-# src/LLMs/groq.py
 from langchain_groq import ChatGroq
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langgraph.prebuilt import create_react_agent
@@ -17,9 +16,13 @@ class GroqLLM:
         """Initialize MCP client once for the class"""
         if cls._mcp_client is None:
             cls._mcp_client = MultiServerMCPClient({
-                "tavily": {
-                    "url": "https://server.smithery.ai/@tavily-ai/tavily-mcp/mcp?api_key=2d235323-4264-4c9d-9c8a-f317dbad8514&profile=invisible-platypus-MViQZ2&max_results=1",
-                    "transport": "streamable_http",
+                "tavily_server": {
+                    "command": "python",
+                    "args": ["/Users/surya/Developer/python/mcp-servers/servers/tavily_server.py"],
+                    "transport": "stdio",
+                    "env": {
+                        "TAVILY_API_KEY": os.getenv("TAVILY_API_KEY", "your_default_tavily_api_key")
+                        }
                 }
             })
             cls._tools = await cls._mcp_client.get_tools()
@@ -45,7 +48,7 @@ class GroqLLM:
         base_model = cls.get_llm_model(model_name, api_key)
         
         # Create agent with tools bound
-        agent = create_react_agent(base_model, cls._tools)
+        agent = base_model.bind_tools(cls._tools)
         
         return agent
     
