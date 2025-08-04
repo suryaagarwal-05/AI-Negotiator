@@ -18,7 +18,7 @@ class DataValidator:
         original_data = state["messages"][0] if state["messages"] else ""
         
         validation_prompt = f"""
-            Search the web for reasons for tyre cost increase in india.
+            Search the web for reasons for tyre cost increase in india for the categories in {areas_with_increases} and keep the response specific to them. 
         """
 
         try:

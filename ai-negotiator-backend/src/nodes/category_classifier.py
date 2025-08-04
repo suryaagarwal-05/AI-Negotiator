@@ -38,7 +38,7 @@ class categoryClassifier:
         
         Return response as JSON:
         {{
-            "areas_with_increases": ["CATEGORY1", "CATEGORY2"],
+            "areas_with_increases": ["NAME_CATEGOR_1", "NAME_CAEGORY_2"],
             "details": "Brief explanation"
         }}
         """

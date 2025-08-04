@@ -90,5 +90,5 @@ class resultAnalyser:
            - Potential counteroffers and alternatives
            - Long-term relationship preservation strategies
 
-        Please provide a structured, actionable response that a procurement professional can immediately implement. Use the name of categories.
+        Please provide a structured, actionable response that a procurement professional can immediately implement.
         """
