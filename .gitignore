@@ -3,3 +3,6 @@ venv/
 __pycache__/
 .env
 uv.lock
+node_modules/
+reports/
+package-lock.json
